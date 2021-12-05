@@ -147,11 +147,10 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    # отписаться от автора
-    user = request.user
+    user = request.user.id
     author = get_object_or_404(User, username=username)
     check_follow = Follow.objects.filter(
-        user=user.id, author=author.id).count()
+        user=user, author=author.id).count()
     if check_follow == 1:
-        Follow.objects.filter().delete()
+        Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('posts:profile', username=username)
