@@ -130,7 +130,6 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    # подписаться на автора
     user = request.user
     author = get_object_or_404(User, username=username)
     check_follow = Follow.objects.filter(

@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -31,7 +33,8 @@ class FollowTest(TestCase):
         """Авторизованный пользователь может подписаться на авторов."""
         follow_url = reverse('posts:profile_follow',
                              args=[self.test_author_janka.username])
-        self.authorized_client.get(follow_url)
+        response = self.authorized_client.get(follow_url)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
         follow_exists = Follow.objects.filter(
             user=self.test_user_kastus,
             author=self.test_author_janka,
