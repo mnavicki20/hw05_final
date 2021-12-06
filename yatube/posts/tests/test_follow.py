@@ -45,18 +45,21 @@ class FollowTest(TestCase):
 
     def test_authorized_client_can_unfollow_authors(self):
         """Авторизованный пользователь может отписаться от авторов."""
+        follow_counts_before = Follow.objects.count()
         Follow.objects.create(
             user=self.test_user_kastus,
             author=self.test_author_janka,
         )
         unfollow_url = reverse('posts:profile_unfollow',
                                args=[self.test_author_janka.username])
-        self.authorized_client.get(unfollow_url)
+        response = self.authorized_client.get(unfollow_url)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
         follow_exists = Follow.objects.filter(
             user=self.test_user_kastus,
             author=self.test_author_janka,
         ).exists()
         self.assertFalse(follow_exists)
+        self.assertEqual(Follow.objects.count(), follow_counts_before)
 
     def test_new_post_appears_for_followers(self):
         """Новая запись пользователя отображается в ленте тех,
