@@ -20,10 +20,6 @@ class FollowTest(TestCase):
             email='kastus_1863@gmail.com',
             password='Kaho_lubis_1863',
         )
-        cls.post = Post.objects.create(
-            author=cls.test_author_janka,
-            text='Тестовый текст публикации',
-        )
 
     def setUp(self):
         self.authorized_client = Client()
@@ -68,15 +64,23 @@ class FollowTest(TestCase):
             user=self.test_user_kastus,
             author=self.test_author_janka,
         )
+        post = Post.objects.create(
+            author=self.test_author_janka,
+            text='Тестовый текст публикации',
+        )
         follow_index_url = reverse('posts:follow_index')
         user_response = self.authorized_client.get(follow_index_url)
         user_content = user_response.context['page_obj']
-        self.assertIn(self.post, user_content)
+        self.assertIn(post, user_content)
 
     def test_new_post_does_not_appear_for_nonfollowers(self):
         """Новая запись пользователя не отображается в ленте тех,
         кто на него не подписан."""
+        post = Post.objects.create(
+            author=self.test_author_janka,
+            text='Тестовый текст публикации',
+        )
         follow_index_url = reverse('posts:follow_index')
         user_response = self.authorized_client.get(follow_index_url)
         user_content = user_response.context['page_obj']
-        self.assertNotIn(self.post, user_content)
+        self.assertNotIn(post, user_content)
