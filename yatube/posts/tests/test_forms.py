@@ -142,8 +142,23 @@ class CommentFormTests(TestCase):
             text='Тестовый текст',
         )
 
-    def test_comments_can_be_created_only_by_authorized_clients(self):
-        """Комментировать посты может только авторизованный пользователь."""
+    def test_authorized_client_can_create_comments(self):
+        """Авторизованный пользователь может комментировать посты."""
+        comments_before = self.post.comments.count()
+        form_data = {
+            'text': 'Тестовый комментарий к посту',
+        }
+        self.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id, }),
+            data=form_data,
+            follow=True,
+        )
+        self.assertEqual(self.post.comments.count(), comments_before + 1)
+        last_comment = self.post.comments.last()
+        self.assertEqual(last_comment.text, form_data['text'])
+
+    def test_guest_client_could_not_create_comments(self):
+        """Неавторизованный пользователь не может комментировать посты."""
         comments_before = self.post.comments.count()
         form_data = {
             'text': 'Тестовый комментарий к посту',
@@ -158,11 +173,3 @@ class CommentFormTests(TestCase):
                                           kwargs={'post_id': self.post.id, }))
         self.assertRedirects(response, expected_redirect)
         self.assertEqual(self.post.comments.count(), comments_before)
-        response = self.authorized_client.post(
-            reverse('posts:add_comment', kwargs={'post_id': self.post.id, }),
-            data=form_data,
-            follow=True,
-        )
-        self.assertEqual(self.post.comments.count(), comments_before + 1)
-        last_comment = self.post.comments.last()
-        self.assertEqual(last_comment.text, form_data['text'])
