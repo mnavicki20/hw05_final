@@ -48,6 +48,13 @@ class PostURLTest(TestCase):
             reverse('posts:post_create'): HTTPStatus.FOUND,
             reverse('posts:post_edit',
                     args=[PostURLTest.post.id]): HTTPStatus.FOUND,
+            reverse('posts:add_comment',
+                    args=[PostURLTest.post.id]): HTTPStatus.FOUND,
+            reverse('posts:follow_index'): HTTPStatus.FOUND,
+            reverse('posts:profile_follow',
+                    args=[PostURLTest.test_user.username]): HTTPStatus.FOUND,
+            reverse('posts:profile_unfollow',
+                    args=[PostURLTest.test_user.username]): HTTPStatus.FOUND,
         }
         for page, status_code in status_codes.items():
             with self.subTest(status_code=status_code):
@@ -68,6 +75,13 @@ class PostURLTest(TestCase):
             reverse('posts:post_create'): HTTPStatus.OK,
             reverse('posts:post_edit',
                     args=[PostURLTest.post.id]): HTTPStatus.OK,
+            reverse('posts:add_comment',
+                    args=[PostURLTest.post.id]): HTTPStatus.FOUND,
+            reverse('posts:follow_index'): HTTPStatus.OK,
+            reverse('posts:profile_follow',
+                    args=[PostURLTest.test_user.username]): HTTPStatus.FOUND,
+            reverse('posts:profile_unfollow',
+                    args=[PostURLTest.test_user.username]): HTTPStatus.FOUND,
         }
         for page, status_code in status_codes.items():
             with self.subTest(status_code=status_code):

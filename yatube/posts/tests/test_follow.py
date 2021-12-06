@@ -36,7 +36,6 @@ class FollowTest(TestCase):
             user=self.test_user_kastus,
             author=self.test_author_janka,
         ).exists()
-        # print(f'Кол-во созданных подписок - {Follow.objects.count()}')
         self.assertTrue(follow_exists)
 
     def test_authorized_client_can_unfollow_authors(self):
