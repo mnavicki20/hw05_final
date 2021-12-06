@@ -31,6 +31,7 @@ class FollowTest(TestCase):
 
     def test_authorized_client_can_follow_authors(self):
         """Авторизованный пользователь может подписаться на авторов."""
+        follow_counts_before = Follow.objects.count()
         follow_url = reverse('posts:profile_follow',
                              args=[self.test_author_janka.username])
         response = self.authorized_client.get(follow_url)
@@ -40,6 +41,7 @@ class FollowTest(TestCase):
             author=self.test_author_janka,
         ).exists()
         self.assertTrue(follow_exists)
+        self.assertEqual(Follow.objects.count(), follow_counts_before + 1)
 
     def test_authorized_client_can_unfollow_authors(self):
         """Авторизованный пользователь может отписаться от авторов."""
