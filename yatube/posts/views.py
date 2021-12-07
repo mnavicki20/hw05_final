@@ -42,13 +42,12 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list = author.posts.all()
     count_user_posts = post_list.count()
-    title = username
     following = request.user.is_authenticated and Follow.objects.filter(
         user=request.user, author=author).exists()
     context = {
         'author': author,
         'count_user_posts': count_user_posts,
-        'title': title,
+        'title': username,
         'following': following,
     }
     context.update(pagination(request, post_list))
@@ -90,7 +89,7 @@ def post_create(request):
 def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    if post.author == request.user:
+    if request.user == post.author:
         form = PostForm(
             request.POST or None,
             files=request.FILES or None,
@@ -132,7 +131,7 @@ def follow_index(request):
 def profile_follow(request, username):
     user = request.user
     author = get_object_or_404(User, username=username)
-    if author.id != user.id:
+    if author.username != user.username:
         Follow.objects.get_or_create(user=user, author=author)
     return redirect('posts:profile', username=username)
 
