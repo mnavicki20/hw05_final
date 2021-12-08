@@ -88,22 +88,15 @@ def post_create(request):
 @login_required
 def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-
-    if request.user == post.author:
-        form = PostForm(
-            request.POST or None,
-            files=request.FILES or None,
-            instance=post
-        )
-        if form.is_valid():
-            form.save()
-            return redirect('posts:post_detail', post_id)
-
+    if request.user != post.author:
+        return redirect('posts:post_detail', post_id)
+    form = PostForm(request.POST or None,
+                    files=request.FILES or None, instance=post)
+    if form.is_valid():
+        form.save()
+        return redirect('posts:post_detail', post_id)
     template = 'posts/create_post.html'
-    context = {
-        'form': form,
-        'is_edit': True,
-    }
+    context = {'form': form, 'is_edit': True, }
     return render(request, template, context)
 
 
@@ -131,7 +124,7 @@ def follow_index(request):
 def profile_follow(request, username):
     user = request.user
     author = get_object_or_404(User, username=username)
-    if author.username != user.username:
+    if author != user:
         Follow.objects.get_or_create(user=user, author=author)
     return redirect('posts:profile', username=username)
 
